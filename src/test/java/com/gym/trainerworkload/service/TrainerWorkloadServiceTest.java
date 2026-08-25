@@ -135,6 +135,7 @@ class TrainerWorkloadServiceTest {
                 .getMonths();
         assertTrue(months
                 .stream()
-                .anyMatch(ms -> ms.getMonthValue() == month && ms.getTrainingSummaryDuration() == 45));
+                .anyMatch(ms -> ms.getMonthValue() == month && ms.getTrainingSummaryDuration() == 45)
+        );
     }
 }

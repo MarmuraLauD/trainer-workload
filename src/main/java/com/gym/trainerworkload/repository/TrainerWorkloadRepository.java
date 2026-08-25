@@ -18,7 +18,7 @@ public class TrainerWorkloadRepository {
                     .trainerUsername(request.getTrainerUsername())
                     .trainerFirstName(request.getTrainerFirstName())
                     .trainerLastName(request.getTrainerLastName())
-                    .trainerStatus(request.isActive())
+                    .trainerStatus(request.getIsActive())
                     .years(new ConcurrentHashMap<>())
                     .build()
         );

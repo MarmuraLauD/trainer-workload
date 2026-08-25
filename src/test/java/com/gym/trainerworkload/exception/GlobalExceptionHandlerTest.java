@@ -2,6 +2,7 @@ package com.gym.trainerworkload.exception;
 
 import com.gym.trainerworkload.dto.response.ErrorResponse;
 import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -12,21 +13,26 @@ import static org.mockito.Mockito.when;
 
 class GlobalExceptionHandlerTest {
 
-    private final GlobalExceptionHandler handler = new GlobalExceptionHandler();
+    private GlobalExceptionHandler handler;
+
+    @BeforeEach
+    void setUp() {
+        handler = new GlobalExceptionHandler();
+    }
 
     @Test
     void handleValidationExceptions_buildsErrorResponseWithFieldErrors() {
-        // AAA
+        // Arrange
         MethodArgumentNotValidException ex = mock(MethodArgumentNotValidException.class);
         BindingResult binding = mock(BindingResult.class);
-        FieldError fe = new FieldError("obj","field","must not be null");
+        FieldError fe = new FieldError("obj", "field", "must not be null");
         when(binding.getAllErrors()).thenReturn(List.of(fe));
         when(ex.getBindingResult()).thenReturn(binding);
 
-        // AAA
+        // Act
         ErrorResponse resp = handler.handleValidationExceptions(ex);
 
-        // AAA
+        // Assert
         assertEquals(400, resp.status());
         assertEquals("Validation failed", resp.message());
         assertNotNull(resp.errors());
@@ -35,14 +41,15 @@ class GlobalExceptionHandlerTest {
 
     @Test
     void handleGenericException_returnsGenericErrorResponse() {
-        // AAA
+        // Arrange
         Exception ex = new IllegalArgumentException("boom");
 
-        // AAA
+        // Act
         ErrorResponse resp = handler.handleGenericException(ex);
 
-        // AAA
+        // Assert
         assertEquals(400, resp.status());
         assertEquals("An error occurred while processing the request. Please verify your data.", resp.message());
     }
+
 }

@@ -4,6 +4,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.MDC;
 import static org.mockito.Mockito.doAnswer;
@@ -13,7 +14,12 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class TransactionFilterTest {
 
-    private final TransactionFilter filter = new TransactionFilter();
+    private TransactionFilter filter;
+
+    @BeforeEach
+    void setUp() {
+        filter = new TransactionFilter();
+    }
 
     @AfterEach
     void tearDown() {
@@ -22,7 +28,7 @@ class TransactionFilterTest {
 
     @Test
     void whenHeaderPresent_thenMdcContainsSameValueDuringFilter() throws Exception {
-        // AAA
+        // Arrange
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpServletResponse response = mock(HttpServletResponse.class);
         FilterChain chain = mock(FilterChain.class);
@@ -37,16 +43,16 @@ class TransactionFilterTest {
             return null;
         }).when(chain).doFilter(request, response);
 
-        // AAA
+        // Act
         filter.doFilter(request, response, chain);
 
-        // AAA
+        // Assert
         assertNull(MDC.get("transactionId"));
     }
 
     @Test
     void whenHeaderMissing_thenMdcHasGeneratedValueDuringFilter() throws Exception {
-        // AAA
+        // Arrange
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpServletResponse response = mock(HttpServletResponse.class);
         FilterChain chain = mock(FilterChain.class);
@@ -63,10 +69,11 @@ class TransactionFilterTest {
             return null;
         }).when(chain).doFilter(request, response);
 
-        // AAA
+        // Act
         filter.doFilter(request, response, chain);
 
-        // AAA
+        // Assert
         assertNull(MDC.get("transactionId"));
     }
+
 }
