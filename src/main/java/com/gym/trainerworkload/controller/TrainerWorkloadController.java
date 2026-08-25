@@ -1,5 +1,6 @@
 package com.gym.trainerworkload.controller;
 
+import com.gym.trainerworkload.controller.api.TrainerWorkloadControllerAPI;
 import com.gym.trainerworkload.dto.request.WorkloadRequest;
 import com.gym.trainerworkload.dto.response.TrainerWorkloadResponse;
 import com.gym.trainerworkload.service.TrainerWorkloadService;
@@ -14,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/workloads")
 @RequiredArgsConstructor
-public class TrainerWorkloadController {
+public class TrainerWorkloadController implements TrainerWorkloadControllerAPI {
 
     private final TrainerWorkloadService trainerWorkloadService;
 

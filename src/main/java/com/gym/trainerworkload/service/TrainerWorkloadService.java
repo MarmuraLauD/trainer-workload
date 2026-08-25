@@ -12,15 +12,18 @@ import com.gym.trainerworkload.repository.TrainerWorkloadRepository;
 import java.util.HashMap;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class TrainerWorkloadService {
 
     private final TrainerWorkloadRepository repository;
 
     public void updateWorkload(WorkloadRequest request) {
+        log.info("Starting workload calculation for trainer: {}", request.getTrainerUsername());
         TrainerSummary trainer = repository.getOrCreateTrainer(request.getTrainerUsername(), request);
 
         int year = request.getTrainingDate().getYear();
@@ -45,9 +48,11 @@ public class TrainerWorkloadService {
         } else if (request.getActionType() == ActionType.DELETE) {
             monthSummary.setTrainingSummaryDuration(Math.max(0, currentDuration - duration));
         }
+        log.info("Workload updated for trainer: {}", request.getTrainerUsername());
     }
 
     public TrainerWorkloadResponse getTrainerWorkload(String username) {
+        log.info("Fetching workload for trainer: {}", username);
         TrainerSummary summary = repository.getTrainer(username)
                 .orElseThrow(() -> new IllegalArgumentException("Trainer not found"));
 
@@ -69,6 +74,7 @@ public class TrainerWorkloadService {
                 .toList();
 
         response.setYears(yearsList);
+        log.info("Workload fetched for trainer: {}", username);
         return response;
     }
 

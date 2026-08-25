@@ -1,6 +1,6 @@
 spring:
   application:
-    name: trainer-workload
+    name: trainer-workload-service
 
 server:
   port: 8081
