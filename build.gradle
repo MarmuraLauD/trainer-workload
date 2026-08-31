@@ -36,6 +36,8 @@ dependencies {
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.13.0'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.3'
+    implementation 'org.springframework.boot:spring-boot-starter-activemq:4.2.0-M1'
+    implementation 'tools.jackson.core:jackson-databind:3.2.2'
 }
 
 dependencyManagement {
