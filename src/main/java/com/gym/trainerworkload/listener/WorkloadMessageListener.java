@@ -7,11 +7,8 @@ import jakarta.validation.Validator;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.MDC;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.jms.core.JmsTemplate;
-import org.springframework.messaging.handler.annotation.Header;
-import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 
 @Slf4j
@@ -24,28 +21,20 @@ public class WorkloadMessageListener {
     private final JmsTemplate jmsTemplate;
 
     @JmsListener(destination = "workload.queue")
-    public void receiveWorkloadRequest(@Payload WorkloadRequest request,
-            @Header(value = "X-Transaction-Id", defaultValue = "UNKNOWN") String transactionId) {
-        MDC.put("transactionId", transactionId);
+    public void receiveWorkloadRequest(WorkloadRequest request) {
+        Set<ConstraintViolation<WorkloadRequest>> violations = validator.validate(request);
 
-        try {
-            log.info("[Transaction: {}] Received message for trainer: {}", transactionId, request.getTrainerUsername());
-            Set<ConstraintViolation<WorkloadRequest>> violations = validator.validate(request);
-
-            if (!violations.isEmpty()) {
-                log.error("[Transaction: {}] Invalid message received. Routing to DLQ. Violations: {}", transactionId, violations);
-                jmsTemplate.convertAndSend("workload.dlq", request);
-                return;
-            }
-
-            trainerWorkloadService.updateWorkload(request);
-        } catch (Exception e) {
-            log.error("[Transaction: {}] Error processing message. Routing to DLQ. Error: {}", transactionId, e.getMessage());
+        if (!violations.isEmpty()) {
+            log.error("Invalid message received. Routing to DLQ. Violations: {}", violations);
             jmsTemplate.convertAndSend("workload.dlq", request);
-        } finally {
-            MDC.remove("transactionId");
+            return;
         }
 
+        try {
+            trainerWorkloadService.updateWorkload(request);
+        } catch (Exception e) {
+            log.error("Error processing message. Routing to DLQ. Error: {}", e.getMessage());
+            jmsTemplate.convertAndSend("workload.dlq", request);
+        }
     }
-
 }

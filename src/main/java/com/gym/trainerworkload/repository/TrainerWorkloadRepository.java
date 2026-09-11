@@ -1,13 +1,31 @@
 package com.gym.trainerworkload.repository;
 
+import com.gym.trainerworkload.dto.request.WorkloadRequest;
 import com.gym.trainerworkload.model.TrainerSummary;
+import java.util.Map;
 import java.util.Optional;
-import org.springframework.data.mongodb.repository.MongoRepository;
+import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface TrainerWorkloadRepository extends MongoRepository<TrainerSummary, String> {
+public class TrainerWorkloadRepository {
 
-    Optional<TrainerSummary> findByTrainerUsername(String trainerUsername);
+    private final Map<String, TrainerSummary> storage = new ConcurrentHashMap<>();
+
+    public TrainerSummary getOrCreateTrainer(String username, WorkloadRequest request) {
+        return storage.computeIfAbsent(username, _ ->
+            TrainerSummary.builder()
+                    .trainerUsername(request.getTrainerUsername())
+                    .trainerFirstName(request.getTrainerFirstName())
+                    .trainerLastName(request.getTrainerLastName())
+                    .trainerStatus(request.getIsActive())
+                    .years(new ConcurrentHashMap<>())
+                    .build()
+        );
+    }
+
+    public Optional<TrainerSummary> getTrainer(String username) {
+        return Optional.ofNullable(storage.get(username));
+    }
 
 }
