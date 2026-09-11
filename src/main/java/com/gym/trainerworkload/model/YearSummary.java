@@ -1,14 +1,17 @@
 package com.gym.trainerworkload.model;
 
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.Builder;
 import lombok.Data;
 
-@Builder
 @Data
+@Builder
 public class YearSummary {
 
     private int yearValue;
-    private Map<Integer, MonthSummary> months;
+
+    @Builder.Default
+    private List<MonthSummary> months = new ArrayList<>();
 
 }
